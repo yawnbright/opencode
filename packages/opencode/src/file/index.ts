@@ -12,7 +12,7 @@ import { Instance } from "../project/instance"
 import { Ripgrep } from "./ripgrep"
 import fuzzysort from "fuzzysort"
 import { Global } from "../global"
-// import { Fd } from "./fd"
+import { Fd } from "./fd"
 
 export namespace File {
   const log = Log.create({ service: "file" })
@@ -168,7 +168,10 @@ export namespace File {
       }
 
       const set = new Set<string>()
-      for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
+      // for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
+      for await (const file of Fd.list({ cwd: Instance.directory })) {
+        if (file.endsWith('/') || file.endsWith('\\')) continue
+
         result.files.push(file)
         let current = file
         while (true) {
