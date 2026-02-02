@@ -9,10 +9,10 @@ import ignore from "ignore"
 import { Log } from "../util/log"
 // import { Filesystem } from "../util/filesystem"
 import { Instance } from "../project/instance"
-// import { Ripgrep } from "./ripgrep"
+import { Ripgrep } from "./ripgrep"
 import fuzzysort from "fuzzysort"
 import { Global } from "../global"
-import { Fd } from "./fd"
+// import { Fd } from "./fd"
 
 export namespace File {
   const log = Log.create({ service: "file" })
@@ -168,11 +168,17 @@ export namespace File {
       }
 
       const set = new Set<string>()
-      for await (const file of Fd.list({ cwd: Instance.directory })) {
-        if (file.endsWith("/") || file.endsWith("\\")) {
-          result.dirs.push(file)
-        } else {
-          result.files.push(file)
+      for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
+        result.files.push(file)
+        let current = file
+        while (true) {
+          const dir = path.dirname(current)
+          if (dir === ".") break
+          if (dir === current) break
+          current = dir
+          if (set.has(dir)) continue
+          set.add(dir)
+          result.dirs.push(dir + "/")
         }
       }
       cache = result
