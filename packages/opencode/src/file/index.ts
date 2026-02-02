@@ -182,10 +182,10 @@ export namespace File {
       //   }
       // }
 
-      for await (const file of Fd.list({ cwd: Instance.directory })) {
+      for await (let file of Fd.list({ cwd: Instance.directory })) {
         // console.log(file)
         if (process.platform == "win32") {
-          file.replaceAll('/', '\\')
+          file = file.replaceAll('/', '\\')
         }
         if (file.endsWith('/') || file.endsWith('\\')) {
           result.dirs.push(file)
