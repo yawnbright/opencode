@@ -168,10 +168,7 @@ export namespace File {
       }
 
       const set = new Set<string>()
-      // for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
-      for await (const file of Fd.list({ cwd: Instance.directory })) {
-        if (file.endsWith('/') || file.endsWith('\\')) continue
-
+      for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
         result.files.push(file)
         let current = file
         while (true) {
@@ -184,6 +181,11 @@ export namespace File {
           result.dirs.push(dir + "/")
         }
       }
+
+      for await (const file of Fd.list({ cwd: Instance.directory })) {
+        console.log(file)
+      }
+
       cache = result
       fetching = false
     }
