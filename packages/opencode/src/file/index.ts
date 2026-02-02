@@ -167,23 +167,31 @@ export namespace File {
         return
       }
 
-      const set = new Set<string>()
-      for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
-        result.files.push(file)
-        let current = file
-        while (true) {
-          const dir = path.dirname(current)
-          if (dir === ".") break
-          if (dir === current) break
-          current = dir
-          if (set.has(dir)) continue
-          set.add(dir)
-          result.dirs.push(dir + "/")
-        }
-      }
+      // const set = new Set<string>()
+      // for await (const file of Ripgrep.files({ cwd: Instance.directory })) {
+      //   result.files.push(file)
+      //   let current = file
+      //   while (true) {
+      //     const dir = path.dirname(current)
+      //     if (dir === ".") break
+      //     if (dir === current) break
+      //     current = dir
+      //     if (set.has(dir)) continue
+      //     set.add(dir)
+      //     result.dirs.push(dir + "/")
+      //   }
+      // }
 
       for await (const file of Fd.list({ cwd: Instance.directory })) {
-        console.log(file)
+        // console.log(file)
+        if (process.platform == "win32") {
+          file.replaceAll('/', '\\')
+        }
+        if (file.endsWith('/') || file.endsWith('\\')) {
+          result.dirs.push(file)
+        } else {
+          result.files.push(file)
+        }
       }
 
       cache = result
